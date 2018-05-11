@@ -1,0 +1,33 @@
+import * as chai from 'chai';
+
+import Customer from '../models/Customer';
+import Pizza from '../models/Pizza';
+import Role from '../models/Role';
+import User from '../models/User';
+
+const expect = chai.expect;
+
+suite('Pizza Model', () => {
+  test('it contains one initial element', async () => {
+    expect(await Pizza.count()).to.equal(1);
+  });
+});
+
+suite('Customer Model', () => {
+  test('a customer has a fav pizza', async () => {
+    const customer = (await Customer.query().eager('favoritePizza').limit(1));
+
+    expect(customer[0].favoritePizza.name).to.equal('jerrycheese');
+  });
+});
+
+
+suite('Users', () => {
+  test(`returns testdbuser with roles 'ADMIN' and 'USER'`, async () => {
+    const testdbuser =
+        (await User.query().where('username', 'testdbuser').eager('roles'))
+
+    expect(testdbuser[0].roles.map(r => r.name))
+        .to.deep.equal(['ADMIN', 'USER']);
+  });
+});

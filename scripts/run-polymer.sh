@@ -1,0 +1,3 @@
+#!/bin/bash
+
+polymer serve

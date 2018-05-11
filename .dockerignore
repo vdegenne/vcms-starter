@@ -1,0 +1,12 @@
+.vscode
+node_modules
+sql
+src/test
+test
+.clang-format
+.dockerignore
+.gitignore
+.travis.yml
+Dockerfile
+package-lock.json
+tsconfig.json
