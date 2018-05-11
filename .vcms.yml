@@ -3,7 +3,7 @@ port: 3000
 session: false
 
 database: false
-db-user: %dbuser%
+db-user: dbuser
 # db-password: '{SHA}5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8'
-db-password: %dbpasswd% # you should replace this with a hash
-db-name: %dbname%
+db-password: dbpassword # you should replace this with a hash
+db-name: dbname

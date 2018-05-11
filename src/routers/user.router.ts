@@ -1,11 +1,13 @@
-import {Router} from 'express';
 import {raw} from 'objection';
+import {Router} from 'vcms';
 
 import User from '../models/User';
+
 
 // import {post} from 'req-control';
 
 const router: Router = Router();
+
 
 router.get('/', async (req, res) => {
   res.send(req.session.user);

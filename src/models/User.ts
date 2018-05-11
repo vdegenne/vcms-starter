@@ -1,4 +1,5 @@
-import {CreamModel, RelationMappings} from './objection-cream';
+import {CreamModel, RelationMappings} from 'vcms';
+
 import Role from './Role';
 
 

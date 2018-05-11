@@ -1,5 +1,4 @@
-import {RelationMappings} from 'objection';
-import {CreamModel} from 'vcms';
+import {CreamModel, RelationMappings} from 'vcms';
 
 import Customer from './Customer';
 
@@ -20,7 +19,6 @@ class Pizza extends CreamModel {
     }
   }
 }
-
 
 
 export default Pizza;

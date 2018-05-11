@@ -1,7 +1,6 @@
-import {start} from 'vcms';
-import {Routers} from 'vcms/lib/app';
+import {Routers, start} from 'vcms';
 
-import exampleRouter from './routers/example.router';
+import {exampleRouter} from './routers/example.router';
 
 
 const routers: Routers = {

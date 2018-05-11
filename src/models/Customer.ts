@@ -1,4 +1,4 @@
-import {CreamModel, Rela} from 'vcms';
+import {CreamModel, RelationMappings} from 'vcms';
 
 import Pizza from './Pizza';
 

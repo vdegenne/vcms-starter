@@ -1,11 +1,11 @@
-import {Router} from 'express';
+import {Router} from 'vcms';
 
 const router: Router = Router();
 
 
-router.get('/hello', (req, res) => {
-  res.send('test from node-vcms-testapp');
+router.get('/hello', async (req, res) => {
+  res.send('hello world');
 });
 
 
-export default router;
+export {router as exampleRouter};
