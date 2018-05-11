@@ -1,17 +1,17 @@
 {
   "name": "testapp",
   "version": "0.1.0",
-  "description": "description",
-  "author": "author",
+  "description": "%description%",
+  "author": "%author%",
   "license": "BSD-3-Clause",
   "scripts": {
-    "dev:serve": "NODE_ENV=dev node build/testapp",
-    "install:database": "psql -U postgres -a -f sql/install.sql -p 5433",
-    "uninstall:database": "psql -U postgres -a -f sql/uninstall.sql -p 5433",
+    "dev:run": "NODE_ENV=dev node build/%appname%",
+    "install:database": "psql -U postgres -a -f sql/install.sql",
+    "uninstall:database": "psql -U postgres -a -f sql/uninstall.sql",
     "clean": "rimraf build",
-    "build": "npm run clean && tsc",
-    "test": "NODE_ENV=test npm run build && mocha",
-    "test:watch": "NODE_ENV=test tsc-then -- mocha",
+    "build": "yarn clean && tsc",
+    "test": "NODE_ENV=test mocha",
+    "test:watch": "yarn clean && tsc-then -- NODE_ENV=test mocha",
     "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i"
   },
   "dependencies": {

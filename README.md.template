@@ -1,0 +1,12 @@
+# %appname%
+
+%description%
+
+## Installation
+
+```bash
+git clone .../%appname%.git
+cd %appname%
+yarn install && yarn install:database
+yarn test && pm2 start build/%appname%
+```

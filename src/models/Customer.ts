@@ -1,6 +1,4 @@
-// import {CreamModel, RelationMappings} from 'vcms/lib/models/objection-cream'
-import {RelationMappings} from 'objection';
-import {CreamModel} from 'vcms';
+import {CreamModel, Rela} from 'vcms';
 
 import Pizza from './Pizza';
 
