@@ -5,14 +5,15 @@
   "author": "%author%",
   "license": "BSD-3-Clause",
   "scripts": {
-    "dev:run": "NODE_ENV=dev node build/%appname%",
+    "run:dev": "NODE_ENV=dev node build/%appname%",
     "install:database": "psql -U postgres -a -f sql/install.sql",
     "uninstall:database": "psql -U postgres -a -f sql/uninstall.sql",
     "clean": "rimraf build",
     "build": "yarn clean && tsc",
     "test": "NODE_ENV=test mocha",
     "test:watch": "yarn clean && tsc-then -- NODE_ENV=test mocha",
-    "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i"
+    "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i",
+    "attach-polymer": "bash ./scripts/attach-polymer.sh"
   },
   "dependencies": {
     "vcms": "^0.1.1"
