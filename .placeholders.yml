@@ -1,0 +1,13 @@
+appname:
+  prompt: Application Name
+
+description:
+  prompt: Application description
+
+dbname:
+  prompt: Database Name
+
+localhostname:
+  prompt: Local Hostname (localhost)
+  default: localhost
+
