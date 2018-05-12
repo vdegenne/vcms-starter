@@ -16,6 +16,6 @@
     "attach-polymer": "bash ./scripts/attach-polymer.sh"
   },
   "dependencies": {
-    "vcms": "^0.1.1"
+    "vcms": "^0.2.0"
   }
 }
