@@ -4,10 +4,17 @@ appname:
 description:
   prompt: Application description
 
-dbname:
-  prompt: Database Name
-
 localhostname:
   prompt: Local Hostname (localhost)
   default: localhost
+
+
+dbname:
+  prompt: Database Name
+
+dbuser:
+  prompt: Database User
+
+dbpasswd:
+  prompt: Database User password
 
