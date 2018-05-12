@@ -1,11 +1,32 @@
-import {Routers, start} from 'vcms';
+import {getConfig, Routers, start, StartupConfig} from 'vcms';
 
 import {exampleRouter} from './routers/example.router';
+import {userRouter} from './routers/user.router';
+
+async function run() {
+  let startconfig: StartupConfig = {};
+
+  startconfig.routers = {
+    '/example': exampleRouter,
+    '/user': userRouter
+  }
+
+  // general config
+  const config =
+      await getConfig();
+
+  if (config.SESSION_REQUIRED) {
+    startconfig.initSessionFunction = async (session) => {
+      // define session object for new-comers here
+      if (!session.user) {
+        session.user = { name: 'guest', roles: ['GUEST'] }
+      }
+    }
+  }
 
 
-const routers: Routers = {
-  '/example': exampleRouter
-};
+  start(startconfig);
+}
 
 
-start({routers: routers});
+run();
