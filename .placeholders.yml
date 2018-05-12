@@ -1,20 +1,28 @@
-appname:
-  prompt: Application Name
-
 description:
   prompt: Application description
 
-localhostname:
-  prompt: Local Hostname (localhost)
+dev-port:
+  prompt: 'Development port (8000)'
+  default: 8000
+
+
+local-hostname:
+  prompt: 'Local hostname, e.g. "app.example.local" ("localhost")'
   default: localhost
 
 
 dbname:
-  prompt: Database Name
+  prompt: Database name
 
 dbuser:
-  prompt: Database User
+  prompt: Database user
 
 dbpasswd:
-  prompt: Database User password
+  prompt: Database password
 
+dev-session-cookie-domain:
+  prompt: 'Local session cookie domain, e.g. ".example.local" ("localhost")'
+  default: localhost
+
+production-session-cookie-domain:
+  prompt: 'Production session cookie domain, e.g. ".example.com"'
