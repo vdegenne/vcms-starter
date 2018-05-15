@@ -13,6 +13,7 @@ session: false
 session-cookie-domain: %dev-session-cookie-domain% # IMPORTANT
 
 
-production:
+prod:
   port: 3000 # IMPORTANT
   session-cookie-domain: %production-session-cookie-domain% # IMPORTANT
+  public-directory: public/build/ # NEED

@@ -7,13 +7,13 @@ async function run() {
   let startconfig: StartupConfig = {};
 
   startconfig.routers = {
-    '/example': exampleRouter,
-    '/user': userRouter
-  }
+    '/api/example': exampleRouter,
+    '/api/user': userRouter
+  };
+
 
   // general config
-  const config =
-      await getConfig();
+  const config = await getConfig();
 
   if (config.SESSION_REQUIRED) {
     startconfig.initSessionFunction = async (session) => {
@@ -23,7 +23,6 @@ async function run() {
       }
     }
   }
-
 
   start(startconfig);
 }

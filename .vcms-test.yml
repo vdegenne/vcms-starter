@@ -1,0 +1,18 @@
+port: 8000
+local-hostname: test.vdegenne.local
+
+
+database: false
+
+db-user: dbuser
+db-password: dbpassword
+# db-password: '{SHA}5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8'
+db-name: dbname
+
+session: false
+session-cookie-domain: .vdegenne.local # IMPORTANT
+
+
+production:
+  port: 3000 # IMPORTANT
+  session-cookie-domain: .vdegenne.com # IMPORTANT
