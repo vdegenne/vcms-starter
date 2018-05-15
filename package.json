@@ -1,5 +1,5 @@
 {
-  "name": "testapp",
+  "name": "appname",
   "version": "0.1.0",
   "description": "%description%",
   "author": "%author%",
@@ -16,6 +16,6 @@
     "attach-polymer": "bash ./scripts/attach-polymer.sh"
   },
   "dependencies": {
-    "vcms": "^0.2.3"
+    "vcms": "^0.3.1"
   }
 }

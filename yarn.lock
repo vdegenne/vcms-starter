@@ -1954,9 +1954,9 @@ vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
 
-vcms@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/vcms/-/vcms-0.2.3.tgz#6b5fda2b293de25fd95250809ce898bf80264703"
+vcms@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/vcms/-/vcms-0.3.1.tgz#1b3663f801ed46979430fcf1d882cee3069739c7"
   dependencies:
     "@types/chai" "^4.1.2"
     "@types/chai-as-promised" "^7.1.0"
