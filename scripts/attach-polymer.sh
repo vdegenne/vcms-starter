@@ -2,11 +2,11 @@
 
 set -e
 
-read -p "Polymer Application type (polymer-basic-starter): " apptype
+read -p "Polymer Application type (polymer-starter): " apptype
 read -p "Polymer Application Name (%appname%): " appname
 
 # defaults
-[ -z "$apptype" ] && apptype='polymer-basic-starter';
+[ -z "$apptype" ] && apptype='polymer-starter';
 [ -z "$appname" ] && appname='%appname%';
 
 github-fetch-starter -n "$appname" $apptype

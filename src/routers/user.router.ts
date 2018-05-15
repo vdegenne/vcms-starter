@@ -17,6 +17,7 @@ router.post('/login', async (req, res) => {
   for (const p of ['username', 'password']) {
     if (!req.body[p]) {
       res.status(400).end('Wrong arguments.');
+      return;
     }
   }
 
