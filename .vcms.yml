@@ -10,10 +10,10 @@ db-password: %dbpasswd%
 db-name: %dbname%
 
 session: false
-session-cookie-domain: %dev-session-cookie-domain% # IMPORTANT
+session-cookie-domain: %dev-session-cookie-domain%
 
 
 prod:
-  port: 3000 # IMPORTANT
-  session-cookie-domain: %production-session-cookie-domain% # IMPORTANT
-  public-directory: public/build/ # NEED
+  port: 3000
+  session-cookie-domain: %production-session-cookie-domain%
+  public-directory: public/build/default

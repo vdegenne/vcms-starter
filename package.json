@@ -1,21 +1,20 @@
 {
-  "name": "appname",
+  "name": "%appname%",
   "version": "0.1.0",
   "description": "%description%",
   "author": "%author%",
   "license": "BSD-3-Clause",
   "scripts": {
-    "run:dev": "NODE_ENV=dev node build/%appname%",
+    "run:dev": "yarn build && NODE_ENV=dev node build/%appname%",
     "install:database": "psql -U postgres -a -f sql/install.sql",
     "uninstall:database": "psql -U postgres -a -f sql/uninstall.sql",
     "clean": "rimraf build",
-    "build": "yarn clean && tsc",
+    "build": "yarn install && yarn clean && tsc",
     "test": "NODE_ENV=test mocha",
     "test:watch": "yarn clean && tsc-then -- NODE_ENV=test mocha",
-    "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i",
-    "attach-polymer": "bash ./scripts/attach-polymer.sh"
+    "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i"
   },
   "dependencies": {
-    "vcms": "^0.3.2"
+    "vcms": "^1.0.2"
   }
 }
