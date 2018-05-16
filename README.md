@@ -22,3 +22,4 @@ This framework is using `vcms` framework, check [vcms yarn page](https://yarnpkg
 - [ ] **Modify `src/%appname%.ts` to custom your application**.
 - [ ] **Use `yarn attach-polymer` to build a Polymer front-end**.
 - [ ] **Replace this readme with `README.md.template` with your own content**.
+- [ ] **`yarn start`** to start the application.
