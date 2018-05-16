@@ -29,7 +29,7 @@ do
   fi
 done <<< "$back_processes"
 
-[ ! $backPidFound ] && echoerr 'No running back-end server was found. Did you try to run `yarn run:dev` first ?'
+[ ! $backPidFound ] && echoerr 'No running back-end server was found. Did you try to run `yarn start` first ?'
 
 
 
