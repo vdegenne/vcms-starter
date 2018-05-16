@@ -1,23 +1,23 @@
 #!/bin/bash
 
-
-# FUNCTIONS
-echoerr () {
-  printf "\e[31m%s\e[0m\n" "$*" >&2;
-  exit 1;
-}
-
+set -e
 
 #--------------------------------------------------
 # Dummy check if the script is run from the root
-[ ! -d scripts ] && echoerr 'Please run this script from the root directory.';
+if [ ! -d scripts ]; then
+ printf '\e[31mPlease run this script from the root directory.\e[0m\n' >&2;
+ exit 1;
+fi
+
+
+# functions we'll need
+source ./scripts/helpers/echoerr.sh
 
 
 #----------------------------------
 # check if NODE_ENV is defined
 if [ -z $NODE_ENV ]; then
-  echo 'NODE_ENV is undefined. Using "dev" value'
-  NODE_ENV=dev
+  echoerr "NODE_ENV can't be resolved."
 fi
 
 
@@ -86,7 +86,7 @@ fi
 
 #-------------------------------------
 # We should kill the Polymer process
-kill -9 $process_id
+kill -15 $process_id
 
 #-------------------------------------
 # And removing the .polymer.port file

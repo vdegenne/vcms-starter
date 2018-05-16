@@ -1,52 +1,41 @@
 #!/bin/bash
 
-# FUNCTIONS
-echoerr () {
-  printf "\e[31m%s\e[0m\n" "$*" >&2;
-  exit 1;
-}
-
+set -e
 
 #--------------------------------------------------
 # Dummy check if the script is run from the root
-[ ! -d scripts ] && echoerr 'Please run this script from the root directory.';
+if [ ! -d scripts ]; then
+ printf '\e[31mPlease run this script from the root directory.\e[0m\n' >&2;
+ exit 1;
+fi
 
 
-#--------------------------------------------------
-# We should check if the back-end server is running
-back_processes="$(ps aux | grep -E 'node build/[^ ]*' | head -n -1)"
-
-[ -z "$back_processes" ] && echoerr 'No running back-end server was found. Did you try to run `yarn start` first ?'
-
-backPidFound=false
-while read back_proc
-do
-  path=$(grep -E 'node build/[^ ]*' -o <<< "$back_proc" | awk '{print $2}')
-  if [ -f "$PWD/$path.js" ]; then
-    backPidFound=true
-    back_pid=$(awk '{print $2}' <<< "$back_proc")
-    break
-  fi
-done <<< "$back_processes"
-
-[ ! $backPidFound ] && echoerr 'No running back-end server was found. Did you try to run `yarn start` first ?'
-
-
-
-#------------------------------------------------------------
-# We should get the port of the back-end server as it exists
-back_port=$(netstat -tulpn 2>/dev/null | grep $back_pid | grep -E ':::[0-9]+' -o | awk '{print substr($0, 4)}')
-
-[ -z "$back_port" ] && echoerr "Couldn't find a port for the back server.";
-
+# functions we'll need
+source ./scripts/helpers/echoerr.sh
+source ./scripts/helpers/get_backend_pid.sh
+source ./scripts/helpers/get_backend_port.sh
 
 
 #----------------------------------
 # check if NODE_ENV is defined
 if [ -z $NODE_ENV ]; then
-  echo 'NODE_ENV is undefined. Using "dev" value'
-  NODE_ENV=dev
+  echoerr "NODE_ENV can't be resolved."
 fi
+
+
+
+#--------------------------------------------------
+# We should check if the back-end server is running
+back_pid=$(get_backend_pid)
+[ -z $back_pid ] && echoerr 'No running back-end server was found. Did you try to run `yarn start` first ?';
+
+
+
+#------------------------------------------------------------
+# We should get the port of the back-end server as it exists
+back_port=$(get_backend_port $back_pid)
+[ -z $back_port ] && echoerr "Couldn't find a port for the back server.";
+
 
 
 #----------------------------------
