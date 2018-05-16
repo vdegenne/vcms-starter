@@ -27,7 +27,7 @@ fi
 #--------------------------------------------------
 # We should check if the back-end server is running
 back_pid=$(get_backend_pid)
-[ -z $back_pid ] && echoerr 'No running back-end server was found. Did you try to run `yarn start` first ?';
+[ -z $back_pid ] && echoerr 'No running back-end server was found. Did you try to run `yarn backend:start` or `yarn backend:watch` first ?';
 
 
 
@@ -136,5 +136,11 @@ echo "$port" > .polymer.port
 # remove .polymer-serve.output
 rm .polymer-serve.output
 
+starting_url="http://$localhostname:$port/";
+printf "\e[32mListening on $starting_url\e[0m\n";
 
-printf "\e[32mListening on http://$localhostname:$port/\e[0m\n";
+if hash google-chrome; then
+  printf 'Opening in Chrome\n'
+  google-chrome "$starting_url"
+fi
+
