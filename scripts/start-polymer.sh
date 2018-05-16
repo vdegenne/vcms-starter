@@ -15,7 +15,6 @@ echoerr () {
 #--------------------------------------------------
 # We should check if the back-end server is running
 back_processes="$(ps aux | grep -E 'node build/[^ ]*' | head -n -1)"
-# back_processes="$(ps aux | grep -E 'node build/[^ ]*' -o | head -n -1 | awk '{print $2}')"
 
 [ -z "$back_processes" ] && echoerr 'No running back-end server was found. Did you try to run `yarn run:dev` first ?'
 
