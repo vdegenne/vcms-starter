@@ -5,15 +5,19 @@
   "author": "%author%",
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "yarn build && node build/%appname%",
-    "start:watch": "watchy -w 'src/**/*.ts' -- bash './scripts/start-backend.sh'",
+    "install:env": "export NODE_ENV=dev && chmod +x ./scripts/*",
     "install:database": "psql -U postgres -a -f sql/install.sql",
     "uninstall:database": "psql -U postgres -a -f sql/uninstall.sql",
     "clean": "rimraf build",
     "build": "yarn clean && tsc",
     "test": "NODE_ENV=test mocha",
     "test:watch": "yarn clean && tsc-then -- NODE_ENV=test mocha",
-    "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i"
+    "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i",
+    "backend:start": "./scripts/start-backend.sh",
+    "backend:watch": "watchy -w 'src/**/*.ts' -- ./scripts/start-backend.sh",
+    "polymer:attach": "./scripts/attach-polymer.sh",
+    "polymer:start": "./scripts/start-polymer.sh",
+    "polymer:stop": "./scripts/stop-polymer.sh"
   },
   "dependencies": {
     "vcms": "^1.0.7",
