@@ -1,6 +1,6 @@
 {
-  "name": "appname",
-  "version": "0.1.0",
+  "name": "%appname%",
+  "version": "0.0.1",
   "description": "%description%",
   "author": "%author%",
   "license": "BSD-3-Clause",
