@@ -10,7 +10,11 @@ const router: Router = Router();
 
 
 router.get('/', async (req, res) => {
-  res.send(req.session.user);
+  if (req.session) {
+    res.send(req.session.user);
+  } else {
+    res.end('No session for user informations.')
+  }
 });
 
 router.post('/login', async (req, res) => {
