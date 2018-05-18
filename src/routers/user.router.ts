@@ -47,14 +47,17 @@ router.post('/login', async (req, res) => {
   }
 
   // success we save the user informations in the session
-  req.session.user = {
-    name: user.username,
-    firstname: user.firstname,
-    lastname: user.lastname,
-    roles: user.roles.map(({name}) => name)
-  };
+  if (req.session) {
+    req.session.user = {
+      id: user.id,
+      name: user.username,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      roles: user.roles.map(({name}) => name)
+    };
+  }
 
-  res.status(200).send({success: true, message: user});
+  res.status(200).send({success: true, user});
 });
 
 
