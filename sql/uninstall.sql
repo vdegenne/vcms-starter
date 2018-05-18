@@ -1,2 +1,0 @@
-DROP DATABASE IF EXISTS %dbname%;
-DROP ROLE IF EXISTS %dbuser%;

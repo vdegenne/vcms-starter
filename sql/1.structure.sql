@@ -1,3 +1,4 @@
+/* SAMPLE */
 create table pizzas (
   id serial primary key,
   name varchar(50) not null,
@@ -10,10 +11,10 @@ create table customers (
   lastname varchar(50) not null,
   favorite_pizza bigint references pizzas (id) on update cascade on delete cascade
 );
+/* END SAMPLE */
 
 
-/* users database */
-
+/* USERS */
 create table users (
   id serial primary key,
   username varchar(25) not null,
@@ -33,3 +34,4 @@ create table users_roles (
   role_id bigint references roles(id) on delete cascade on update cascade,
   unique(user_id, role_id)
 );
+/* END USERS */
