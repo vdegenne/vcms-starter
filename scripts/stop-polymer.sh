@@ -11,14 +11,16 @@ fi
 
 
 # functions we'll need
-source ./scripts/helpers/echoerr.sh
+source ./scripts/helpers/logger.sh
 
 
 #----------------------------------
 # check if NODE_ENV is defined
 if [ -z $NODE_ENV ]; then
-  echoerr "NODE_ENV can't be resolved."
+  echoinfo "NODE_ENV not set. Rolling back to 'NODE_ENV=dev' !"
+  NODE_ENV=dev
 fi
+
 
 
 #----------------------------------
@@ -41,21 +43,29 @@ JSON="$(./node_modules/.bin/js-yaml .vcms.yml)"
 
 #---------------------------------------------------
 # trying to resolve public directory (for polymer serve proxy)
-selector=".$NODE_ENV.\"public-directory\""
-publicDir="$(jq -r $selector <<< "$JSON")"
+# selector=".$NODE_ENV.\"public-directory\""
+# publicDir="$(jq -r $selector <<< "$JSON")"
 
-if [ "$publicDir" = 'null' ]; then
-  publicDir="$(jq -r '."public-directory"' <<< "$JSON")"
+# if [ "$publicDir" = 'null' ]; then
+#   publicDir="$(jq -r '."public-directory"' <<< "$JSON")"
 
-  if [ "$publicDir" = 'null' ]; then
-    publicDir='public'
-  fi
+#   if [ "$publicDir" = 'null' ]; then
+#     publicDir='public'
+#   fi
+# fi
+
+
+
+echoinfo "moving in the polymer directory. Assume 'public' !"
+cd public/
+
+#-------------------------------------------------
+# We should check if a Polymer application exists
+if [ ! -f polymer.json ]; then
+  echoerr 'no Polymer application found. Run `yarn polymer:attach` to install one.'
 fi
 
 
-
-# moving in the polymer directory
-cd "$publicDir"
 
 
 #-------------------------------

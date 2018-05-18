@@ -11,7 +11,7 @@ fi
 
 
 # functions we'll need
-source ./scripts/helpers/echoerr.sh
+source ./scripts/helpers/logger.sh
 source ./scripts/helpers/get_backend_pid.sh
 source ./scripts/helpers/get_backend_port.sh
 
@@ -19,7 +19,8 @@ source ./scripts/helpers/get_backend_port.sh
 #----------------------------------
 # check if NODE_ENV is defined
 if [ -z $NODE_ENV ]; then
-  echoerr "NODE_ENV can't be resolved."
+  echoinfo "NODE_ENV not set. Rolling back to 'NODE_ENV=dev' !"
+  NODE_ENV=dev
 fi
 
 
@@ -47,7 +48,7 @@ fi
 #----------------------------------
 # check if js-yaml is installed
 if [ ! -f ./node_modules/.bin/js-yaml ]; then
-  echoerr 'You need js-yaml to run this script. Did you run "yarn install" ?'
+  echoerr 'You need js-yaml to run this script. Did you run "yarn vcms:install" ?'
 fi
 
 
@@ -85,34 +86,43 @@ fi
 
 #---------------------------------------------------
 # trying to resolve public directory (for polymer serve proxy)
-selector=".$NODE_ENV.\"public-directory\""
-publicDir="$(jq -r $selector <<< "$JSON")"
+# selector=".$NODE_ENV.\"public-directory\""
+# publicDir="$(jq -r $selector <<< "$JSON")"
 
-if [ "$publicDir" = 'null' ]; then
-  publicDir="$(jq -r '."public-directory"' <<< "$JSON")"
+# if [ "$publicDir" = 'null' ]; then
+#   publicDir="$(jq -r '."public-directory"' <<< "$JSON")"
 
-  if [ "$publicDir" = 'null' ]; then
-    publicDir='public'
-  fi
+#   if [ "$publicDir" = 'null' ]; then
+#     publicDir='public'
+#   fi
+# fi
+
+
+
+echoinfo "moving in the polymer directory. Assume 'public' !"
+cd public/
+
+
+#-------------------------------------------------
+# We should check if a Polymer application exists
+if [ ! -f polymer.json ]; then
+  echoerr 'no Polymer application found. Run `yarn polymer:attach` to install one.'
 fi
-
-
-
-# moving in the polymer directory
-cd "$publicDir"
 
 
 #----------------------------------------------------------------------
 # If .polymer.port is existing, it means an instance is already running
 # We should abort
 if [ -f .polymer.port ]; then
-  echoerr ".polymer.port' was found. call './scripts/stop-polymer.sh' before calling this script again."
+  echoerr ".polymer.port' was found. run 'yarn polymer:stop' before calling this script again."
 fi
 
 
-#---------------------------------------------------
-# running polymer serve
-printf "Running \"\e[33mpolymer serve --hostname \"$localhostname\" --proxy-path \"/api\" --proxy-target \"$localhostname:$back_port/api\"\e[0m\"\n"
+
+echoinfo '==================================';
+echoinfo '= Running "polymer serve"..      =';
+echoinfo '==================================';
+printf "Invoking \"\e[33mpolymer serve --hostname \"$localhostname\" --proxy-path \"/api\" --proxy-target \"$localhostname:$back_port/api\"\e[0m\"\n"
 polymer serve --hostname "$localhostname" --proxy-path "/api" --proxy-target "http://$localhostname:$back_port/api" >> .polymer-serve.output &
 
 
@@ -128,7 +138,7 @@ done
 port="$(cat .polymer-serve.output | grep -E ':[0-9]+' -o | head -n 1 | awk '{print substr($0, 2)}')"
 
 #---------------------------------------------------
-# save port in a temporary file so we can call 'yarn stop-polymer'
+# save port in a temporary file so we can call 'yarn polymer:stop'
 echo "$port" > .polymer.port
 
 
@@ -137,10 +147,10 @@ echo "$port" > .polymer.port
 rm .polymer-serve.output
 
 starting_url="http://$localhostname:$port/";
-printf "\e[32mListening on $starting_url\e[0m\n";
+echosuccess "Listening on $starting_url";
 
-if hash google-chrome; then
-  printf 'Opening in Chrome\n'
-  google-chrome "$starting_url"
-fi
+# if hash google-chrome; then
+#   printf 'Opening in Chrome\n'
+#   google-chrome "$starting_url"
+# fi
 
