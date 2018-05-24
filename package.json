@@ -21,7 +21,7 @@
     "format": "find src test -iname '*.ts' | xargs clang-format --style=file -i"
   },
   "dependencies": {
-    "vcms": "^1.5.2",
+    "vcms": "^1.5.3",
     "watchy": "^0.8.0"
   }
 }
