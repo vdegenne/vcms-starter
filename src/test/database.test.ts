@@ -10,7 +10,7 @@ import {getConfig} from 'vcms/lib/test/util';
 chai.use(ChaiAsPromised);
 const expect = chai.expect;
 
-const defaultConfigFilepath: string = __dirname + '/../../test/.vcms-db.yml';
+const defaultConfigScriptFilepath: string = __dirname + '/../startupconfig.js';
 
 
 suite('Database', () => {
@@ -20,7 +20,7 @@ suite('Database', () => {
   setup(async () => {
     // this will get executed before all, then all the suites inside this suite
     // run
-    config = await getConfig([], null, defaultConfigFilepath);
+    config = await getConfig([], defaultConfigScriptFilepath);
     database = await getDatabase(config);
   });
 

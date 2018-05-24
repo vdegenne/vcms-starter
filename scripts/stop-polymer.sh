@@ -41,21 +41,6 @@ fi
 JSON="$(./node_modules/.bin/js-yaml .vcms.yml)"
 
 
-#---------------------------------------------------
-# trying to resolve public directory (for polymer serve proxy)
-# selector=".$NODE_ENV.\"public-directory\""
-# publicDir="$(jq -r $selector <<< "$JSON")"
-
-# if [ "$publicDir" = 'null' ]; then
-#   publicDir="$(jq -r '."public-directory"' <<< "$JSON")"
-
-#   if [ "$publicDir" = 'null' ]; then
-#     publicDir='public'
-#   fi
-# fi
-
-
-
 echoinfo "moving in the polymer directory. Assume 'public' !"
 cd public/
 

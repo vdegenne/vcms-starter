@@ -33,10 +33,10 @@ fi
 # is not running already.
 back_pid=$(get_backend_pid)
 if [ ! -z $back_pid ]; then
-  echoinfo 'A backend instance was found. Now killing this instance.\n'
+  echoinfo 'A backend instance was found. Now killing this instance.'
   kill -15 $back_pid
   sleep 1
-  echosuccess 'The backend instance was killed. Proceeding...\n'
+  echosuccess 'The backend instance was killed. Proceeding...'
 fi
 
 

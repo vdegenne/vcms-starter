@@ -2,10 +2,10 @@
  * and the password not to be exposed in files */
 
 
-DROP DATABASE IF EXISTS vcms_test;
-CREATE DATABASE vcms_test OWNER vcms_user;
+DROP DATABASE IF EXISTS %dbname%;
+CREATE DATABASE %dbname% OWNER %dbuser%;
 
-\connect vcms_test
+\connect %dbname%
 
 
 \i sql/1.structure.sql

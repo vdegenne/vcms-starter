@@ -1,12 +1,12 @@
 {
-  "name": "appname",
+  "name": "%appname%",
   "version": "0.0.1",
   "description": "%description%",
   "author": "%author%",
   "license": "BSD-3-Clause",
   "scripts": {
     "vcms:install": "bash ./scripts/install.sh",
-    "install:database": "psql -U vcms_user -a -f sql/0.install.sql",
+    "install:database": "psql -U %dbuser% -a -f sql/0.install.sql",
     "vcms:run": "./scripts/run.sh",
     "clean": "rimraf build",
     "build": "yarn clean && tsc",
