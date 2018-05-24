@@ -1,19 +1,21 @@
-port: %dev-port%
-local-hostname: %local-hostname%
+port: 3005
+local-hostname: vcms.vdegenne.local
+publics:
+  /*: public
 
+database: true
 
-database: false
-
-db-user: %dbuser%
-db-password: %dbpasswd% # should encode the password as the example below
+db-user: vcms_user
+db-password: password # should encode the password as the example below
 # db-password: '{SHA}5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8'
-db-name: %dbname%
+db-name: vcms_test
 
-session: false
-session-cookie-domain: %dev-session-cookie-domain%
+session: true
+session-cookie-domain: .vdegenne.local
 
 
 prod:
   port: 3000
-  session-cookie-domain: %production-session-cookie-domain%
-  public-directory: public/build/default
+  session-cookie-domain: .vdegenne.com
+  publics:
+    /*: public/build/es6-bundled

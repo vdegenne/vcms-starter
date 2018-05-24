@@ -18,7 +18,22 @@ class Role extends CreamModel {
       }
     }
   }
+
+  static jsonSchema = {
+    type: 'object',
+    required: ['name'],
+
+    properties: {id: {type: 'integer'}, name: {type: 'string'}}
+  }
 }
+
+
+export const getRole = async (id: number, eager: string = null) => {
+  if (eager) {
+    return (await Role.query().where('id', id).eager(eager))[0];
+  }
+  return (await Role.query().where('id', id))[0];
+};
 
 
 export default Role;

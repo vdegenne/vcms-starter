@@ -15,8 +15,11 @@ This framework is using `vcms` framework, check [vcms yarn page](https://yarnpkg
 
 
 - [ ] **Run `yarn vcms:install`**. This will install the dependencies and init the environment. `yarn install` is not required.
-- [ ] **Assemble your database sql files in `sql`**.
-- [ ] **Create your models in `src/models`**. `Pizza.ts` and `Customer.ts` are not necessary and are just to help remind how objection models work. `User.ts` and `Role.ts` are not necessary too but if your application needs to implement a login support, it's hardly recommended to be based on them.
+- [ ] **Add the local hostname in `/etc/hosts`** if different than `localhost`.
+- If using a database :
+  - [ ] **Create the database role** if it doesn't exist already.
+  - [ ] **Assemble your database sql files in `sql`**.
+  - [ ] **Create your models in `src/models`**. `Pizza.ts` and `Customer.ts` are not necessary and are just to help remind how objection models work. `User.ts` and `Role.ts` are not necessary too but if your application needs to implement a login support, it's hardly recommended to be based on them.
 - [ ] **Create your routers in `src/routers`**. `customer.router.ts` is not necessary and is just here to help remind how to write a router in `vcms` framework. `user.router.ts` is not necessary too but if your application needs to implement a login support, it's hardly recommended to be based on it.
 - [ ] **Modify `startupconfig.ts`** to customize your application.
 - [ ] **Tests in `./src/test/`.**

@@ -1,17 +1,12 @@
-/**
- * TODO: its purpose is to be used in the application
- * testing units to clean the data before using "2.data.sql"
- * to fill it with initial data.
- */
-
-/* SAMPLE */
-drop table if exists customers cascade;
-drop table if exists pizzas cascade;
-/* END SAMPLE */
+/* empty the table */
+delete from pizzas;
+delete from customers;
+delete from users;
+delete from roles;
 
 
-/* USERS */
-drop table if exists users_roles cascade;
-drop table if exists users cascade;
-drop table if exists roles cascade;
-/* END USERS */
+/* reset the sequences */
+alter sequence pizzas_id_seq restart 1;
+alter sequence customers_id_seq restart 1;
+alter sequence roles_id_seq restart 1;
+alter sequence users_id_seq restart 1;

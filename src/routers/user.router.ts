@@ -1,48 +1,56 @@
 import {raw} from 'objection';
 import {Router} from 'vcms';
 
-import User from '../models/User';
+import User, {getUser, getUserByUsername} from '../models/User';
 
-
-// import {post} from 'req-control';
+import {canAccess} from './secure';
+import {validateBody} from './util';
 
 const router: Router = Router();
 
 
+
+/****************
+ * Informations
+ ***************/
 router.get('/', async (req, res) => {
   if (req.session) {
-    res.send(req.session.user);
+    res.send({success: true, data: req.session.user});
   } else {
     res.end('No session for user informations.')
   }
 });
 
+
+/**************
+ * Login
+ *************/
 router.post('/login', async (req, res) => {
-  for (const p of ['username', 'password']) {
-    if (!req.body[p]) {
-      res.status(400).end('Wrong arguments.');
-      return;
-    }
+  if (!validateBody(req.body, {'username': 'string', 'password': 'string'})) {
+    res.status(400).end();
+    return;
   }
 
   const username = req.body.username;
   const password = Buffer.from(req.body.password, 'base64').toString('utf8');
 
-  let user = (await User.query().where('username', username))[0];
+  // verify if the user first
+  let user = await getUserByUsername(username);
 
   if (!user) {
-    res.status(200).send({success: false, message: 'The user doesn\'t exist.'});
+    res.send({success: false, message: 'The user doesn\'t exist.'});
     return;
   }
 
+  // then verify if the password is correct
   user = (await User.query()
               .eager('roles')
               .where('username', username)
               .where(raw(`password = crypt('${password}', password)`)))[0];
 
+
   if (!user) {
-    res.status(200).send(
-        {success: false, message: 'The password is incorrect.'});
+    res.send({success: false, message: 'The password is incorrect.'});
     return;
   }
 
@@ -53,12 +61,16 @@ router.post('/login', async (req, res) => {
       name: user.username,
       firstname: user.firstname,
       lastname: user.lastname,
-      roles: user.roles.map(({name}) => name)
+      roles: user.roles.map(({name}) => name),
+      logged: true
     };
   }
 
-  res.status(200).send({success: true, user});
+  delete user.password;
+
+  res.send({success: true, data: user});
 });
+
 
 
 export {router as userRouter};

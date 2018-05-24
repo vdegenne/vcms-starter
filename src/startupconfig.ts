@@ -1,6 +1,6 @@
 import {Routers, StartupConfig} from 'vcms';
 
-import {exampleRouter} from './routers/example.router';
+import {customersRouter} from './routers/customers.router';
 import {userRouter} from './routers/user.router';
 
 let startupConfig: StartupConfig = {};
@@ -8,8 +8,8 @@ let startupConfig: StartupConfig = {};
 startupConfig.configFilepath = __dirname + '/../.vcms.yml';
 
 startupConfig.routers = {
-  '/api/example': exampleRouter,
-  '/api/user': userRouter
+  '/api/user': userRouter,
+  '/api/customers': customersRouter
 };
 
 

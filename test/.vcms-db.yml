@@ -1,0 +1,4 @@
+database: true
+db-user: vcms_user
+db-password: password
+db-name: vcms_test

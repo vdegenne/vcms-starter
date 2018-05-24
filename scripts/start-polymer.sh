@@ -83,6 +83,23 @@ if [ $port = 'null' ]; then
   fi
 fi
 
+#---------------------------------------------------
+# trying to resolve http2 (for polymer server proxy)
+selector=".$NODE_ENV.http2"
+http2="$(jq -r $selector <<< "$JSON")"
+
+if [ $http2 = null ]; then
+  http2="$(jq -r '.http2' <<< "$JSON")"
+
+  if [ $http2 = null ]; then
+    http2=false
+  fi
+fi
+
+# protocol
+proto='http'
+[ $http2 = true ] && proto=${proto}s
+
 
 #---------------------------------------------------
 # trying to resolve public directory (for polymer serve proxy)
@@ -114,7 +131,11 @@ fi
 # If .polymer.port is existing, it means an instance is already running
 # We should abort
 if [ -f .polymer.port ]; then
-  echoerr ".polymer.port' was found. run 'yarn polymer:stop' before calling this script again."
+  # echoerr "'.polymer.port' was found. run 'yarn polymer:stop' before calling this script again."
+  echoinfo '".polymer.port" was found. Running `yarn polymer:stop` before proceeding...'
+  cd ..
+  yarn polymer:stop
+  cd public
 fi
 
 
@@ -122,8 +143,9 @@ fi
 echoinfo '==================================';
 echoinfo '= Running "polymer serve"..      =';
 echoinfo '==================================';
-printf "Invoking \"\e[33mpolymer serve --hostname \"$localhostname\" --proxy-path \"/api\" --proxy-target \"$localhostname:$back_port/api\"\e[0m\"\n"
-polymer serve --hostname "$localhostname" --proxy-path "/api" --proxy-target "http://$localhostname:$back_port/api" >> .polymer-serve.output &
+
+printf "Invoking \"\e[33mpolymer serve --hostname \"$localhostname\" --proxy-path \"api\" --proxy-target \"$proto://$localhostname:$back_port/api\" \e[0m\"\n"
+polymer serve --hostname "$localhostname" --proxy-path "api" --proxy-target "$proto://$localhostname:$back_port/api" >> .polymer-serve.output &
 
 
 #---------------------------------------------------
@@ -146,7 +168,7 @@ echo "$port" > .polymer.port
 # remove .polymer-serve.output
 rm .polymer-serve.output
 
-starting_url="http://$localhostname:$port/";
+starting_url="$proto://$localhostname:$port/";
 echosuccess "Listening on $starting_url";
 
 # if hash google-chrome; then

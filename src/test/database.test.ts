@@ -10,50 +10,27 @@ import {getConfig} from 'vcms/lib/test/util';
 chai.use(ChaiAsPromised);
 const expect = chai.expect;
 
-const defaultConfigScriptPath: string = __dirname + '/../startupconfig.js';
+const defaultConfigFilepath: string = __dirname + '/../../test/.vcms-db.yml';
 
-
-/* use the following code to cleanup the database */
-/* beforeEach((done) => {
-  const sql = ['destructure', 'structure', 'data']
-                  .map(f =>
-read(`${__dirname}/../../sql/${f}.sql`).toString()) .join('');
-
-  database.raw(sql).then(() => done()).catch(err => done(err));
-}); */
 
 suite('Database', () => {
   let config: VcmsOptions;
   let database: Knex;
 
-  const debug = () => {
-    displayAllLoggers();
-  };
-
-
-  suiteSetup(async () => {
+  setup(async () => {
     // this will get executed before all, then all the suites inside this suite
     // run
-    config = await getConfig([], defaultConfigScriptPath);
-    // database = await getDatabase(config);
+    config = await getConfig([], null, defaultConfigFilepath);
+    database = await getDatabase(config);
   });
 
-  suiteTeardown(async () => {
-    // this will get executed after all the suites inside this suite finish to
-    // run
+  teardown(async () => {
     if (database) {
       await database.destroy();
     }
   });
 
-  teardown(() => {
-    displayAllLoggers(false);
-  });
-
-
-
   test('gives us a decent connection', async () => {
-    database = await getDatabase(config);
     return expect(database).to.be.ok;
   });
 });
