@@ -7,6 +7,23 @@
 ```bash
 git clone .../%appname%.git
 cd %appname%
-yarn install && yarn install:database
-yarn test && pm2 start build/%appname%
+yarn vcms:install
+```
+
+### Development
+
+```bash
+yarn install:database
+yarn build
+yarn test
+yarn backend:start
+yarn polymer:start
+```
+
+### Production
+
+```bash
+yarn vcms:build
+yarn test
+yarn vcms:run
 ```

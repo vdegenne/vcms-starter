@@ -15,7 +15,7 @@ startupConfig.routers = {
 
 startupConfig.initSessionFunction = (session) => {
   if (!session.user) {
-    session.user = {name: 'guest', logged: false, roles: ['GUEST']}
+    session.user = {username: 'guest', logged: false, roles: ['GUEST']}
   }
   // tip: it's good to get the last information of the user
   // If the user object exists, we should fetch new information

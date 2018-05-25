@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
   if (req.session) {
     req.session.user = {
       id: user.id,
-      name: user.username,
+      username: user.username,
       firstname: user.firstname,
       lastname: user.lastname,
       roles: user.roles.map(({name}) => name),
