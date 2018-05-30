@@ -12,6 +12,11 @@ fi
 # make all the scripts executables
 chmod +x ./scripts/*
 
+if [ -f ./sql/backups/backup-database.sh ]; then
+  chmod +x ./sql/backups/backup-database.sh
+fi
+
+
 source ./scripts/helpers/logger.sh
 
 echoinfo '==================================';
