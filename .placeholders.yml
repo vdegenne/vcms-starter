@@ -1,3 +1,6 @@
+strict: true
+
+
 description:
   prompt: Application description
 
