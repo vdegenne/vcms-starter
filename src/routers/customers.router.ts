@@ -4,7 +4,7 @@ import Hangeul, {getCustomer, getCustomerByFirstname} from '../models/Customer';
 import Customer from '../models/Customer';
 
 import {canAccess} from './secure';
-import {getErrorFeedback, validateParams} from './util';
+import {getErrorDetails, validateParams} from './util';
 
 const router: Router = Router();
 
@@ -28,7 +28,7 @@ router.use(async (req, res, next) => {
  **********/
 router.get('/', async (req, res) => {
   const customers = (await Customer.query().eager('favoritePizza'));
-  res.send({success: true, data: customers});
+  res.send({success: true, customers});
 });
 
 router.get('/:customer', async (req, res) => {
@@ -52,10 +52,12 @@ router.get('/:customer', async (req, res) => {
     }
 
     // send the result
-    res.send({success: true, data: customer});
+    res.send({success: true, customer});
 
   } catch (error) {
-    res.status(500).send('BIG ERROR');
+    const details = getErrorDetails(error);
+    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
+        .send({success: 0, ...details});
     return;
   }
 });
@@ -70,13 +72,14 @@ router.post('/', async (req, res) => {
   try {
     const customer = await Customer.query().insert(req.body);
 
-    res.status(200).send(customer);
+    res.status(200).send({success: true, customer});
     return;
 
   } catch (error) {
-    const feedback = await getErrorFeedback(
-        error, req, res, {'23505': 'The customer already exist.'});
-    res.status(feedback.httpStatus).send(feedback);
+    const details =
+        getErrorDetails(error, {'23505': 'The customer already exist.'});
+    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
+        .send({success: 0, ...details});
     return;
   }
 });
@@ -85,9 +88,9 @@ router.post('/', async (req, res) => {
 /***********
  * DELETE
  **********/
-router.delete('/:customerId', async (req, res) => {
+router.delete('/:customer_id', async (req, res) => {
   // Is the urlParam an integer ?
-  if (!validateParams(req.params, {'customerId': 'integer'})) {
+  if (!validateParams(req.params, {customer_id: 'integer'})) {
     res.status(400).end();
     return;
   }
@@ -98,18 +101,20 @@ router.delete('/:customerId', async (req, res) => {
 
     // 404 not found
     if (!(customer =
-              await getCustomer(req.params.customerId, 'favoritePizza'))) {
+              await getCustomer(req.params.customer_id, 'favoritePizza'))) {
       res.status(404).end();
       return;
     }
 
     // delete
     await Customer.query().delete().where('id', customer.id);
-    res.status(200).send(customer);
+    res.status(200).send({success: true, customer});
 
   } catch (error) {
-    const feedback = await getErrorFeedback(error, req, res);
-    res.status(feedback.httpStatus).send(feedback);
+    const details = getErrorDetails(error);
+    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
+        .send({success: 0, ...details});
+    return;
   }
 });
 
@@ -117,9 +122,9 @@ router.delete('/:customerId', async (req, res) => {
 /************
  * PUT
  ***********/
-router.put('/:customerId', async (req, res) => {
+router.put('/:customer_id', async (req, res) => {
   // Is the urlParam an integer ?
-  if (!validateParams(req.params, {'customerId': 'integer'}) ||
+  if (!validateParams(req.params, {customer_id: 'integer'}) ||
       !Object.keys(req.body).length) {
     res.status(400).end();
     return;
@@ -131,7 +136,7 @@ router.put('/:customerId', async (req, res) => {
 
     // 404 not found
     if (!(customer =
-              await getCustomer(req.params.customerId, 'favoritePizza'))) {
+              await getCustomer(req.params.customer_id, 'favoritePizza'))) {
       res.status(404).end();
       return;
     }
@@ -141,12 +146,14 @@ router.put('/:customerId', async (req, res) => {
     // update
     await Customer.query().update(customer).where('id', customer.id);
 
-    res.send({success: true, data: customer});
+    res.send({success: true, customer});
     return;
 
   } catch (error) {
-    const feedback = await getErrorFeedback(error, req, res);
-    res.status(feedback.httpStatus).send(feedback);
+    const details = getErrorDetails(error);
+    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
+        .send({success: 0, ...details});
+    return;
   }
 });
 

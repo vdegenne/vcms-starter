@@ -2,7 +2,7 @@ import * as chai from 'chai';
 import * as ChaiAsPromised from 'chai-as-promised';
 import * as supertest from 'supertest';
 import {getApp} from 'vcms/lib/app';
-import {VcmsWritableOptions} from 'vcms/lib/config';
+import {VcmsOptions} from 'vcms/lib/config';
 import {getDatabase} from 'vcms/lib/database';
 import {displayAllLoggers} from 'vcms/lib/logging'
 import {destroyStructure, getStructure, Structure} from 'vcms/lib/server';
@@ -20,7 +20,7 @@ const defaultConfigScriptPath: string = __dirname + '/../startupconfig.js';
 
 
 suite('App', () => {
-  let config: VcmsWritableOptions;
+  let config: VcmsOptions;
   let struct: Structure;
 
   setup(async () => {
@@ -67,32 +67,33 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            const response =
+            const req =
                 await supertest(struct.app).get('/api/customers').expect(200);
-            const load = JSON.parse(response.text);
-            expect(load.success).to.be.true;
-            expect(load.data.length).to.equal(1);  // equal 1 tho
+            const res = JSON.parse(req.text);
+            expect(res.success).to.be.true;
+            expect(res.customers.length).to.equal(1);  // equal 1 tho
           });
 
 
       test('GET "/api/customers/:customer" works with integer', async () => {
         await grantAccess();
 
-        const res = await supertest(struct.app).get('/api/customers/1');
-        expect(res.status).to.equal(200);
-        const load = JSON.parse(res.text);
-        expect(load.data).to.be.ok;
-        expect(load.data.firstname).to.equal('john');
+        const req =
+            await supertest(struct.app).get('/api/customers/1').expect(200);
+        const res = JSON.parse(req.text);
+        expect(res.customer).to.be.ok;
+        expect(res.customer.firstname).to.equal('john');
       });
 
       test('GET "/api/customers/:customer" works with string', async () => {
         await grantAccess();
 
-        const res = await supertest(struct.app).get(`/api/customers/john`);
-        expect(res.status).to.equal(200);
-        const load = JSON.parse(res.text);
-        expect(load.data).to.be.ok;
-        expect(load.data.lastname).to.equal('snow');
+        const req =
+            await supertest(struct.app).get(`/api/customers/john`).expect(200);
+
+        const res = JSON.parse(req.text);
+        expect(res.customer).to.be.ok;
+        expect(res.customer.lastname).to.equal('snow');
       });
 
       test(
@@ -100,14 +101,14 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            const response =
-                await supertest(struct.app).get(`/api/customers/john`);
+            const req = await supertest(struct.app)
+                            .get(`/api/customers/john`)
+                            .expect(200);
 
-            expect(response.status).equals(200);
-            const load = JSON.parse(response.text);
-            expect(load.success).to.be.true;
-            expect(load.data.favoritePizza).to.be.ok;
-            expect(load.data.favoritePizza.name).to.equal('jerrycheese');
+            const res = JSON.parse(req.text);
+            expect(res.success).to.be.ok;
+            expect(res.customer.favoritePizza).to.be.ok;
+            expect(res.customer.favoritePizza.name).to.equal('jerrycheese');
           });
     });
 
@@ -127,12 +128,10 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            await supertest(struct.app)
-                .post('/api/customers')
-                .send()
-                .expect((res: supertest.Response) => {
-                  expect(res.status).not.to.be.equal(401);
-                })
+            const req =
+                await supertest(struct.app).post('/api/customers').send();
+
+            expect(req.status).not.to.equal(401);
           });
 
 
@@ -140,15 +139,14 @@ suite('App', () => {
       test(`POST "/api/customers" without arguments returns 400`, async () => {
         await grantAccess();
 
-        await supertest(struct.app)
-            .post('/api/customers')
-            .send()  // sends nothing
-            .expect(400)
-            .expect((res: supertest.Response) => {
-              const load = JSON.parse(res.text);
-              expect(load.success).to.be.false;
-              expect(load.data).to.contain('Bad Arguments');
-            });
+        const req = await supertest(struct.app)
+                        .post('/api/customers')
+                        .send()  // sends nothing
+                        .expect(400);
+
+        const res = JSON.parse(req.text);
+        expect(res.success).not.to.be.ok;
+        expect(res.message).to.contain('Bad Arguments');
       });
 
       test(
@@ -174,20 +172,19 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            await supertest(struct.app)
-                .post('/api/customers')
-                .send({firstname: 'John', lastname: 'Doe'})
-                .expect(200);
+            let req = await supertest(struct.app)
+                          .post('/api/customers')
+                          .send({firstname: 'John', lastname: 'Doe'})
+                          .expect(200);
 
-            return supertest(struct.app)
-                .post('/api/customers')
-                .send({firstname: 'John', lastname: 'Doe'})
-                .expect(500)
-                .expect((res: supertest.Response) => {
-                  const load = JSON.parse(res.text);
-                  expect(load.success).to.be.false;
-                  expect(load.data).to.contains('already exist');
-                });
+            req = await supertest(struct.app)
+                      .post('/api/customers')
+                      .send({firstname: 'John', lastname: 'Doe'})
+                      .expect(200);
+
+            const res = JSON.parse(req.text);
+            expect(res.success).not.to.be.ok;
+            expect(res.message).to.contains('already exist');
           });
     });
 
@@ -203,11 +200,8 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            await supertest(struct.app)
-                .delete('/api/customers/1')
-                .expect((res: supertest.Response) => {
-                  expect(res.status).not.to.be.equal(401);
-                });
+            const req = await supertest(struct.app).delete('/api/customers/1');
+            expect(req.status).not.to.equal(401);
           });
 
       test(
@@ -250,11 +244,9 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            await supertest(struct.app)
-                .put('/api/customers/1')
-                .expect((res: supertest.Response) => {
-                  expect(res.status).not.to.be.equal(401);
-                });
+            const req = await supertest(struct.app).put('/api/customers/1');
+
+            expect(req.status).not.to.equal(401);
           });
 
       test(
@@ -292,22 +284,17 @@ suite('App', () => {
           async () => {
             await grantAccess();
 
-            await supertest(struct.app)
-                .put('/api/customers/1')
-                .send({firstname: 'Jack'})
-                .expect(200)
-                .expect((res: supertest.Response) => {
-                  const load = JSON.parse(res.text);
-                  expect(load.data.firstname).to.equal('Jack');
-                });
+            let req = await supertest(struct.app)
+                          .put('/api/customers/1')
+                          .send({firstname: 'Jack'})
+                          .expect(200);
 
-            await supertest(struct.app)
-                .get('/api/customers/1')
-                .expect(200)
-                .expect((res: supertest.Response) => {
-                  const load = JSON.parse(res.text);
-                  expect(load.data.firstname).to.equal('Jack');
-                });
+            expect(JSON.parse(req.text).customer.firstname).to.equal('Jack');
+
+            req =
+                await supertest(struct.app).get('/api/customers/1').expect(200);
+
+            expect(JSON.parse(req.text).customer.firstname).to.equal('Jack');
           });
     });
   });
@@ -318,15 +305,15 @@ suite('App', () => {
     test(`success to login using route '/api/user/login'`, async () => {
       const base64Pass = Buffer.from('password').toString('base64');
 
-      const response = await supertest(struct.app)
-                           .post('/api/user/login')
-                           .send(`username=snakeoil&password=${base64Pass}`);
+      const req = await supertest(struct.app)
+                      .post('/api/user/login')
+                      .send(`username=snakeoil&password=${base64Pass}`);
 
-      const load = JSON.parse(response.text);
+      const res = JSON.parse(req.text);
 
-      expect(load.success).to.be.true;
-      expect(load.data).to.be.ok;
-      return expect(load.data.username).to.equal('snakeoil');
+      expect(res.success).to.be.true;
+      expect(res.data).to.be.ok;
+      return expect(res.data.username).to.equal('snakeoil');
     });
   });
 });

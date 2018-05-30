@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import * as Knex from 'knex';
-import {VcmsWritableOptions} from 'vcms/lib/config';
+import {VcmsOptions} from 'vcms/lib/config';
 import {getDatabase} from 'vcms/lib/database';
 import {displayAllLoggers} from 'vcms/lib/logging';
 import {getConfig} from 'vcms/lib/test/util';
@@ -14,7 +14,7 @@ const defaultConfigFilepath = __dirname + '/../../.vcms.yml';
 
 
 suite('Models', () => {
-  let config: VcmsWritableOptions;
+  let config: VcmsOptions;
   let database: Knex;
 
 

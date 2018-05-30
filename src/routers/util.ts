@@ -2,93 +2,123 @@ import {json, Request, Response} from 'express';
 import {ValidationError} from 'objection';
 
 
-export interface ErrorFeedback {
-  success: boolean;
-  data: string;
-  /** Usually error code from database */
-  errcode?: number;
-  /** http status */
-  httpStatus: number;
+export function validateBody(
+    params: object, validationObject: {[param: string]: string|string[]}) {
+  return validateParams(params, validationObject);
 }
 
-export async function getErrorFeedback(
-    error: any, req: Request, res: Response,
-    customErrorMessages: {[code: string]: string} = {}):
-    Promise<ErrorFeedback> {
-  let feed: ErrorFeedback = {
-    success: false,
-    data: null,
+export function validateParams(
+    params: object, validationObject: {[param: string]: string|string[]}) {
+  // for every params to validate
+  for (const p of Object.keys(validationObject)) {
+    // convert to an array if needed to enter the loop
+    if (typeof validationObject[p] === 'string') {
+      validationObject[p] = [<string>validationObject[p]];
+    }
+
+    // if the param is not in the params, returns false directly
+    if (!params[p] && !validationObject[p].includes('undefined')) {
+      return false;
+    }
+
+
+    // opt-in
+    let valid = false;
+
+    // for every type
+    for (const t of validationObject[p]) {
+      // if valid we pass all other validation
+      if (valid) continue;
+
+      let typeDetails: any = {type: t};
+
+      // details the string type ?
+      if (typeDetails.type !== 'string') {
+        let stringDetails;
+        if ((stringDetails = typeDetails.type.match(/^string\((.*)\)$/))) {
+          typeDetails.type = 'string';
+          typeDetails.length = parseInt(stringDetails[1]);  // add the length
+        }
+      }
+      // todo: more details (for example size of integer)
+
+      switch (typeDetails.type) {
+        case 'number':
+        case 'integer':
+          valid = (typeof params[p] === 'number');
+          if (!valid) {  // try against the string
+            valid = parseInt(params[p]).toString() === params[p];
+          }
+          break;
+        case 'string':
+          valid = (typeof params[p] === 'string');
+          if (typeDetails.length) {
+            valid = (params[p].length === typeDetails.length);
+          }
+          break;
+        case 'null':
+          valid = (params[p] === null);
+          if (!valid) {  // try against the string
+            valid = (params[p] === 'null');
+          }
+          break;
+        case 'undefined':
+          valid = (!params[p]);
+          break;
+      }
+    }
+
+    // if no validation type were satisfied (fail)
+    if (!valid) return false;
+  }
+
+  return true;
+}
+
+
+export interface ErrorDetails {
+  message?: string;
+  /** Usually error code from database */
+  errcode?: number;
+  /** Recommended http status to send as a response */
+  httpStatus?: number;
+}
+
+export function getErrorDetails(
+    error: any, customErrorMessages: {[code: string]: string} = {}) {
+  let details: ErrorDetails = {
+    message: 'none',
     httpStatus: 500
   }
 
   // objection validation fail
   if (error.name === 'ValidationError') {
-    feed = {
-      ...feed,
-      errcode: error.statusCode,
-      data: 'Bad Arguments',
-      httpStatus: 400
-    };
+    details.message = `Bad Arguments (${error.message})`;
+    details.errcode = error.statusCode;
+    details.httpStatus = 400;
   }
-
 
   // probably errors from the database
   if (error.code) {
-    feed.errcode = error.code;
+    details.errcode = error.code;
+
     switch (error.code) {
+      case '42703':
+        details.message = customErrorMessages['42703'] || 'Too many arguments';
+        details.httpStatus = 400;
+        break;
       case '23505':
-        feed.data = customErrorMessages['23505'] || 'The object already exist.';
+        details.message =
+            customErrorMessages['23505'] || 'The object already exist.';
         break;
       case '23502':
-        feed.data = customErrorMessages['23502'] ||
+        details.message = customErrorMessages['23502'] ||
             'Trying to delete but some data depends on it.';
         break;
       default:
-        feed.data = customErrorMessages[error.code] || null;
+        details.message = customErrorMessages[error.code] || null;
     }
   }
 
-  return feed;
-}
-
-
-export function validateBody(
-    params: object, validationObject: {[param: string]: string}) {
-  return validateParams(params, validationObject);
-}
-
-export function validateParams(
-    params: object, validationObject: {[param: string]: string}) {
-  for (const p of Object.keys(validationObject)) {
-    if (!params[p]) return false;
-
-    let Type: any = {
-      type: validationObject[p]
-    }
-
-    // details the string type ?
-    if (Type.type !== 'string') {
-      let stringDetails;
-      if ((stringDetails = Type.type.match(/^string\((.*)\)$/))) {
-        Type.type = 'string';
-        Type.length = parseInt(stringDetails[1]);
-      }
-    }
-    // todo: more details (for example size of integer)
-
-    switch (Type.type) {
-      case 'integer':
-        if (parseInt(params[p]).toString() !== params[p]) {
-          return false;
-        }
-        break;
-      case 'string':
-        if (Type.length)
-          if (params[p].length !== Type.length) return false;
-        break;
-      default:
-        return false;
-    }
-  }
-  return true;
+  return details;
 }

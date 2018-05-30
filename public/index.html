@@ -1,46 +1,27 @@
 <!doctype html>
-<html lang=en>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+    <link rel="icon" href="images/favicon.ico">
 
-  <title>temp-dir</title>
-  <meta name="description" content="asdfasdf">
-
-  <script>
-    // Load and register pre-caching Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('service-worker.js', {
-          scope: '/',
-        });
-      });
-    }
-
-    // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
-    // https://github.com/reactjs/redux/issues/2907
-    window.process = { env: { NODE_ENV: 'prod' } };
-  </script>
-
-
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Roboto';
-    }
-  </style>
-</head>
-
-<body>
-  <my-app appTitle="temp-dir"></my-app>
-  <noscript>
-    Please enable JavaScript to view this website.
-  </noscript>
-
-  <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-  <script type="module" src="src/components/my-app.js"></script>
-</body>
-
+    <title>Welcome</title>
+    <style>
+      a {
+        color:#03a9f4;
+      }
+      code {
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome</h1>
+    <p>If you see this page, it means your app is up and running. Good job.</p>
+    <p>Right now your application has only one route : <a title="try me" href="/ping" target="_blank">/ping</a>.<br>
+      Routes are not in the public space, they are just server responses from specific urls.</p>
+    <p>But this page you reading right now is in the public directory of your application.</p>
+    <p>You can remove or edit this page to your own likings. Or use the script <code>yarn polymer:attach</code> to call a Polymer starter. Polymer lets you make wonderful things on the front-end spotlight. After attaching a polymer starter, refresh this page and you should see a new welcoming message.</p>
+  </body>
 </html>

@@ -1,9 +1,8 @@
-port: %dev-port%
-local-hostname: %local-hostname%
-publics:
-  /*: public
+port: 8000
+local-hostname: vcms.vdegenne.local
+static: public/build/es6-bundled
 
-database: false
+database: true
 
 db-user: %dbuser%
 db-password: %dbpasswd% # should encode the password as the example below
@@ -16,7 +15,6 @@ session-cookie-domain: %dev-session-cookie-domain%
 
 prod:
   port: 3000
-  http2: true
+  # http2: true
   session-cookie-domain: %production-session-cookie-domain%
-  publics:
-    /*: public/build/es6-bundled
+  static: public/build/es6-bundled

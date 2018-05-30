@@ -13,8 +13,6 @@ insert into roles (name) values
 ('USER'),
 ('TEST');
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 insert into users (username, firstname, lastname, email, password) values
 /* don't insert the default admin here unless you encrypt the password. */
 ('snakeoil', 'Snake', 'Oil', 'snake.oil@gmail.com', '$1$CaHOH23G$5EoD0d5UDupl3GtUa93X71');
