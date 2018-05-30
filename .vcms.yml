@@ -1,6 +1,6 @@
 port: %dev-port%
 local-hostname: %local-hostname%
-static: public/build/es6-bundled
+static: public
 
 database: false
 
