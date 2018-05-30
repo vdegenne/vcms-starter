@@ -1,31 +1,33 @@
 strict: true
 
+author:
+  prompt: "Author"
 
 description:
-  prompt: Application description
+  prompt: "Application description"
 
 dev-port:
-  prompt: 'Development port (8000)'
+  prompt: "Development port [8000]"
   default: '8000'
 
 
 local-hostname:
-  prompt: 'Local hostname, e.g. "app.example.local" ("localhost")'
+  prompt: "Local hostname (e.g. 'app.example.local') [localhost]"
   default: localhost
 
 
 dbname:
-  prompt: Database name
+  prompt: "Database name"
 
 dbuser:
-  prompt: Database user
+  prompt: "Database user"
 
 dbpasswd:
-  prompt: Database password
+  prompt: "Database password"
 
 dev-session-cookie-domain:
-  prompt: 'Local session cookie domain, e.g. ".example.local" ("localhost")'
+  prompt: "Local session cookie domain (e.g. '.example.local') [localhost]"
   default: localhost
 
 production-session-cookie-domain:
-  prompt: 'Production session cookie domain, e.g. ".example.com"'
+  prompt: "Production session cookie domain (e.g. '.example.com')"

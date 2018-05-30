@@ -1,8 +1,8 @@
-port: 8000
-local-hostname: vcms.vdegenne.local
+port: %dev-port%
+local-hostname: %local-hostname%
 static: public/build/es6-bundled
 
-database: true
+database: false
 
 db-user: %dbuser%
 db-password: %dbpasswd% # should encode the password as the example below
