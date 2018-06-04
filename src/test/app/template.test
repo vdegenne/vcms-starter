@@ -1,0 +1,42 @@
+import * as chai from 'chai';
+import * as ChaiAsPromised from 'chai-as-promised';
+import {VcmsOptions} from 'vcms';
+import {destroyStructure, getStructure, Structure} from 'vcms/lib/server';
+import {getConfig, accessAsAdmin, accessAsUser, accessAsGuest} from 'vcms/lib/test/util';
+import * as supertest from 'supertest';
+
+import {resetDatabase as _resetDatabase} from '../util';
+chai.use(ChaiAsPromised);
+const expect = chai.expect;
+
+const defaultConfigScriptPath: string = __dirname + '/../startupconfig.js';
+
+
+suite('App', () => {
+  let config: VcmsOptions;
+  let struct: Structure;
+
+  setup(async () => {
+    config = await getConfig([], defaultConfigScriptPath);
+    struct = await getStructure(config);
+  });
+
+  teardown(async () => {
+    if (struct) {
+      await destroyStructure(struct);
+    }
+  });
+
+  async function resetDatabase() {
+    if (struct.database) {
+      _resetDatabase(
+          struct.database, ['0.destroy', '1.pre-data', '2.data', '3.post-data']);
+    }
+  }
+
+  suite('Model', () => {
+    test('test', async () => {
+      expect(true).to.be.true;
+    });
+  });
+});

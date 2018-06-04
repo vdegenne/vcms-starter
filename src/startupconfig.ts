@@ -1,6 +1,7 @@
 import {readFileSync} from 'fs';
 import {VcmsOptions} from 'vcms';
 
+import Role from './models/Role';
 import {customersRouter} from './routers/customers.router';
 import {userRouter} from './routers/user.router';
 
@@ -18,7 +19,7 @@ export default (config: VcmsOptions) => {
 
   config.initSessionFunction = (session) => {
     if (!session.user) {
-      session.user = {username: 'guest', logged: false, roles: ['GUEST']}
+      session.user = {username: 'guest', logged: false, roles: [new Role('GUEST')]}
     }
     // tip: it's good to get the last information of the user
     // If the user object exists, we should fetch new information

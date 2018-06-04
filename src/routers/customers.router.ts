@@ -1,25 +1,11 @@
-import {Router} from 'vcms';
+import {Router, validateBody} from 'vcms';
+import {getErrorDetails, validateParams} from 'vcms';
 
-import Hangeul, {getCustomer, getCustomerByFirstname} from '../models/Customer';
 import Customer from '../models/Customer';
 
-import {canAccess} from './secure';
-import {getErrorDetails, validateParams} from './util';
+import {AuthorizationDetails, getAuthorizationDetails} from './authorization';
 
 const router: Router = Router();
-
-
-/** verification */
-router.use(async (req, res, next) => {
-  // secure access to these interfaces
-  if (['GET', 'POST', 'PUT', 'DELETE'].includes(req.method)) {
-    if (!canAccess(req)) {
-      res.status(401).end();
-      return;
-    }
-  }
-  next();
-});
 
 
 
@@ -27,37 +13,92 @@ router.use(async (req, res, next) => {
  * GET
  **********/
 router.get('/', async (req, res) => {
-  const customers = (await Customer.query().eager('favoritePizza'));
-  res.send({success: true, customers});
+  try {
+    let auth: AuthorizationDetails = await getAuthorizationDetails(req);
+
+    // FORBIDDEN ?
+    if (!auth.pass || auth.as !== 'ADMIN') {
+      res.status(401).end();
+      return;
+    }
+
+    const customers = await Customer.query();
+    res.send({success: 1, customers});
+    return;
+
+  } catch (e) {
+    res.status(500).end();
+    return;
+  }
 });
+
 
 router.get('/:customer', async (req, res) => {
   try {
-    let customer;
-    // the hangeulId can be both a character and a
-    // Is the urlParam an integer ?
-    if (validateParams(req.params, {'customer': 'integer'})) {
-      customer = await getCustomer(req.params.customer, 'favoritePizza');
-    } else if (validateParams(req.params, {'customer': 'string'})) {
-      customer =
-          await getCustomerByFirstname(req.params.customer, 'favoritePizza');
-    } else {
-      res.status(400).end();
+    let auth: AuthorizationDetails = await getAuthorizationDetails(req);
+
+    // FORBIDDEN ?
+    if (!auth.pass || auth.as !== 'ADMIN') {
+      res.status(401).end();
       return;
     }
 
-    if (!customer) {
-      res.status(404).end();
+    /*****************
+     * Bad Request ?
+     *****************/
+    let params: any = validateParams(req, {customer: ['number', 'string']});
+    if (!params) {
+      res.status(400).send({success: 0, message: 'Bad Arguments'});
       return;
     }
 
-    // send the result
-    res.send({success: true, customer});
+    /************************
+     * Authentication checks
+     ************************/
+    // SHOULD ADD MORE AUTHENTICATION CHECK HERE
 
-  } catch (error) {
-    const details = getErrorDetails(error);
-    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
-        .send({success: 0, ...details});
+    // FORBIDDEN ?
+    if (!auth.pass) {
+      res.status(401).end();
+      return;
+    }
+
+
+    try {  // get
+
+      // eager
+      const fulleager = ('fulleager' in req.query) ? true : false;
+      const eager = fulleager ? 'favoritePizza' : '';
+
+
+      let customer: Customer;
+      switch (typeof params.customer) {
+        case 'number':
+          customer = await Customer.get(params.customer, eager);
+          break;
+        case 'string':
+          customer = await Customer.getByFirstname(params.customer, eager);
+          break;
+        default:
+          throw new Error();
+      }
+
+      if (!customer) {
+        res.status(404).send({success: 0, message: `The customer couldn't be found`});
+        return;
+      }
+
+      // send
+      res.send({success: 1, customer});
+      return;
+
+    } catch (e) {
+      const details = getErrorDetails(e);
+      res.status(details.httpStatus).send({success: 0, ...details});
+      return;
+    }
+  } catch (e) {
+    res.status(500).end();
     return;
   }
 });
@@ -68,91 +109,165 @@ router.get('/:customer', async (req, res) => {
  * POST
  **********/
 router.post('/', async (req, res) => {
-  // trying to insert the object in the database
   try {
-    const customer = await Customer.query().insert(req.body);
+    let auth: AuthorizationDetails = await getAuthorizationDetails(req);
 
-    res.status(200).send({success: true, customer});
-    return;
+    // FORBIDDEN ?
+    if (!auth.pass) {
+      res.status(401).end();
+      return;
+    }
 
-  } catch (error) {
-    const details =
-        getErrorDetails(error, {'23505': 'The customer already exist.'});
-    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
-        .send({success: 0, ...details});
+    /*****************
+     * Bad Request ?
+     *****************/
+    let body: any = validateBody(req, {firstname: 'string', lastname: 'string'});
+    if (!body) {
+      res.status(400).send({success: 0, message: 'Bad Arguments'});
+      return;
+    }
+
+    /************************
+     * Authentication checks
+     ************************/
+    // SHOULD ADD MORE AUTHENTICATION CHECK HERE
+
+    // FORBIDDEN ?
+    if (!auth.pass) {
+      res.status(401).end();
+      return;
+    }
+
+    try {  // insert
+      // SHOULD PREPARE THE DATA HERE
+
+
+      // insert
+      const customer = await Customer.query().insert(body).returning('*');
+
+      res.status(200).send({success: 1, customer});
+      return;
+
+    } catch (e) {
+      const details = getErrorDetails(e);
+      res.status(details.httpStatus).send({success: 0, ...details});
+      return;
+    }
+
+  } catch (e) {
+    res.status(500).end();
     return;
   }
 });
+
+
+
+/***********
+ * PUT
+ ***********/
+router.put('/:customerId', async (req, res) => {
+  try {
+    let auth: AuthorizationDetails = await getAuthorizationDetails(req);
+
+    // FORBIDDEN ?
+    if (!auth.pass) {
+      res.status(401).end();
+      return;
+    }
+
+    /*****************
+     * Bad Request ?
+     *****************/
+    let params: any = validateParams(req, {customerId: 'number'});
+    let body: any =
+        validateBody(req, {firstname: ['string', 'undefined'], lastname: ['string', 'undefined']});
+
+    if (!params || !body || !Object.keys(body).length) {
+      res.status(400).send({success: 0, message: 'Bad Arguments'});
+      return;
+    }
+
+    /************************
+     * Authentication checks
+     ************************/
+    // SHOULD ADD MORE AUTHENTICATION CHECK HERE
+
+    // FORBIDDEN ?
+    if (!auth.pass) {
+      res.status(401).end();
+      return;
+    }
+
+    try {  // update
+      let customer: Customer = await Customer.get(params.customerId);
+
+      if (!customer) {
+        res.status(404).send({success: 0, message: 'The customer doesn\'t exist'});
+        return;
+      }
+
+      // customer = {...customer, ...body};
+
+      customer = (await Customer.query().patch(body).where('id', customer.id).returning('*'))[0];
+      res.send({success: 1, customer});
+      return;
+
+    } catch (e) {
+      const details = getErrorDetails(e);
+      res.status(details.httpStatus).send({success: 0});
+      return;
+    }
+
+  } catch (e) {
+    res.status(500).end();
+    return;
+  }
+});
+
 
 
 /***********
  * DELETE
  **********/
-router.delete('/:customer_id', async (req, res) => {
-  // Is the urlParam an integer ?
-  if (!validateParams(req.params, {customer_id: 'integer'})) {
-    res.status(400).end();
-    return;
-  }
-
-  // Trying to delete the object
+router.delete('/:customerId', async (req, res) => {
   try {
-    let customer;
+    let auth: AuthorizationDetails = await getAuthorizationDetails(req);
 
-    // 404 not found
-    if (!(customer =
-              await getCustomer(req.params.customer_id, 'favoritePizza'))) {
-      res.status(404).end();
+    // forbidden ?
+    if (!auth.pass) {
+      res.status(401).end();
       return;
     }
 
-    // delete
-    await Customer.query().delete().where('id', customer.id);
-    res.status(200).send({success: true, customer});
-
-  } catch (error) {
-    const details = getErrorDetails(error);
-    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
-        .send({success: 0, ...details});
-    return;
-  }
-});
-
-
-/************
- * PUT
- ***********/
-router.put('/:customer_id', async (req, res) => {
-  // Is the urlParam an integer ?
-  if (!validateParams(req.params, {customer_id: 'integer'}) ||
-      !Object.keys(req.body).length) {
-    res.status(400).end();
-    return;
-  }
-
-  // trying to update
-  try {
-    let customer;
-
-    // 404 not found
-    if (!(customer =
-              await getCustomer(req.params.customer_id, 'favoritePizza'))) {
-      res.status(404).end();
+    /*****************
+     * Bad Request ?
+     *****************/
+    let params: any = validateParams(req, {customerId: 'number'});
+    if (!params) {
+      res.status(400).end();
       return;
     }
 
-    customer = {...customer, ...req.body};
+    let customer: Customer = await Customer.get(params.customerId);
+    try {  // delete
 
-    // update
-    await Customer.query().update(customer).where('id', customer.id);
+      if (!customer) {
+        res.status(404).send({success: 0, message: 'The customer was not found'});
+        return;
+      }
 
-    res.send({success: true, customer});
-    return;
+      // deleting the object
+      customer = await Customer.query().deleteById(params.customerId);
+      res.send({success: 1, customer});
 
-  } catch (error) {
-    const details = getErrorDetails(error);
-    res.status(details.httpStatus === 500 ? 200 : details.httpStatus)
-        .send({success: 0, ...details});
+
+    } catch (e) {
+      const details = getErrorDetails(e);
+      res.status(details.httpStatus).send({success: 0, ...details});
+      return;
+    }
+  } catch (e) {
+    res.status(500).end();
     return;
   }
 });

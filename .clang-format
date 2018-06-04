@@ -1,2 +1,3 @@
 BasedOnStyle: Google
 Language: JavaScript
+ColumnLimit: 110

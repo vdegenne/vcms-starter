@@ -1,0 +1,4 @@
+- [ ] modify the models to integrate the getX directly into the model
+- [ ] add the ColumnLimit: 500 to the clang-format file
+- [ ] update the util.ts file in the routers directory
+- [ ] add backend:start in the polymer development readme.

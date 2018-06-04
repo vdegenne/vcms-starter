@@ -1,3 +1,4 @@
+import {Transaction} from 'objection';
 import {CreamModel, RelationMappings} from 'vcms';
 
 import Customer from './Customer';
@@ -29,16 +30,11 @@ class Pizza extends CreamModel {
       toppings: {type: 'string'}
     }
   }
+
+  get = async (id: number, eager: string = '', trx: Transaction = null) => {
+    return await Pizza.query(trx).findById(id).eager(eager);
+  };
 }
-
-
-
-export const getPizza = async (id: number, eager: string = null) => {
-  if (eager) {
-    return (await Pizza.query().where('id', id).eager(eager))[0];
-  }
-  return (await Pizza.query().where('id', id))[0];
-};
 
 
 export default Pizza;

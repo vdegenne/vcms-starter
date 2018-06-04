@@ -1,12 +1,15 @@
+import {Transaction} from 'objection';
 import {CreamModel, RelationMappings} from 'vcms';
 
 import Pizza from './Pizza';
 
 
 class Customer extends CreamModel {
-  id!: number;
-  firstname!: string;
-  lastname!: string;
+  readonly id!: number;
+  firstname: string;
+  lastname: string;
+  favorite_pizza: number;
+
   favoritePizza?: Pizza;
 
   static tableName = 'customers';
@@ -25,26 +28,19 @@ class Customer extends CreamModel {
     properties: {
       id: {type: 'integer'},
       firstname: {type: 'string'},
-      lastname: {type: 'string'}
+      lastname: {type: 'string'},
+      favorite_pizza: {type: ['integer', 'null']}
     }
-  }
+  };
+
+  static get = async (id: number, eager: string = '', trx: Transaction = null) => {
+    return await Customer.query(trx).findById(id).eager(eager);
+  };
+
+  static getByFirstname = async (firstname: string, eager: string = '', trx: Transaction = null) => {
+    return (await Customer.query(trx).where('firstname', firstname).eager(eager))[0];
+  };
 }
-
-export const getCustomer = async (id: number, eager: string = null) => {
-  if (eager) {
-    return (await Customer.query().where('id', id).eager(eager))[0];
-  }
-  return (await Customer.query().where('id', id))[0];
-};
-
-export const getCustomerByFirstname =
-    async (firstname: string, eager: string = null) => {
-  if (eager) {
-    return (
-        await Customer.query().where('firstname', firstname).eager(eager))[0];
-  }
-  return (await Customer.query().where('firstname', firstname))[0];
-};
 
 
 export default Customer;

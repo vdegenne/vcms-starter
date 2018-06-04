@@ -18,8 +18,6 @@ suite('Database', () => {
   let database: Knex;
 
   setup(async () => {
-    // this will get executed before all, then all the suites inside this suite
-    // run
     config = await getConfig([], defaultConfigScriptFilepath);
     database = await getDatabase(config);
   });
@@ -31,6 +29,6 @@ suite('Database', () => {
   });
 
   test('gives us a decent connection', async () => {
-    return expect(database).to.be.ok;
+    expect(database).to.be.ok;
   });
 });

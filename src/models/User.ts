@@ -1,3 +1,4 @@
+import {Transaction} from 'objection';
 import {CreamModel, RelationMappings} from 'vcms';
 
 import Role from './Role';
@@ -11,6 +12,8 @@ class User extends CreamModel {
   email!: string;
   password!: string;
 
+  logged!: boolean;
+
   roles?: Role[];
 
   static tableName = 'users';
@@ -18,11 +21,7 @@ class User extends CreamModel {
     roles: {
       relation: CreamModel.ManyToManyRelation,
       modelClass: `${__dirname}/Role`,
-      join: {
-        from: 'users.id',
-        through: {from: 'users_roles.user_id', to: 'users_roles.role_id'},
-        to: 'roles.id'
-      }
+      join: {from: 'users.id', through: {from: 'users_roles.user_id', to: 'users_roles.role_id'}, to: 'roles.id'}
     }
   }
 
@@ -39,23 +38,38 @@ class User extends CreamModel {
       password: {type: 'string'}
     }
   }
-}
 
+  /* helpers */
+  async verifyExistence() {
+    if (!this.id) {
+      return false;
+    }
+    const user = await User.get(this.id);
+    return (user ? true : false);
+  }
 
-export const getUser = async (id: number, eager: string = null) => {
-  if (eager) {
+  async hasRole(role: string) {
+    let r: Role|any;
+    for (r of this.roles) {
+      if (typeof r === 'string' && r === role) {
+        return true;
+      }
+      if (typeof r === 'object' && r.name === role) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /* getters */
+  static get = async (id: number, eager: string = '') => {
     return (await User.query().where('id', id).eager(eager))[0];
-  }
-  return (await User.query().where('id', id))[0];
-};
+  };
 
-export const getUserByUsername =
-    async (username: string, eager: string = null) => {
-  if (eager) {
+  static getByUsername = async (username: string, eager: string = '') => {
     return (await User.query().where('username', username).eager(eager))[0];
-  }
-  return (await User.query().where('username', username))[0];
-};
+  };
+}
 
 
 export default User;

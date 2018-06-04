@@ -2,10 +2,15 @@ import {CreamModel, RelationMappings} from 'vcms';
 
 
 class Role extends CreamModel {
+  static tableName = 'roles';
   id!: number;
   name!: string;
 
-  static tableName = 'roles';
+  constructor(name: string) {
+    super();
+    this.name = name;
+  }
+
 
   static relationMappings: RelationMappings = {
     users: {
@@ -25,15 +30,11 @@ class Role extends CreamModel {
 
     properties: {id: {type: 'integer'}, name: {type: 'string'}}
   }
+
+  static get = async (id: number, eager: string = '') => {
+    return await Role.query().findById(id).eager(eager);
+  };
 }
-
-
-export const getRole = async (id: number, eager: string = null) => {
-  if (eager) {
-    return (await Role.query().where('id', id).eager(eager))[0];
-  }
-  return (await Role.query().where('id', id))[0];
-};
 
 
 export default Role;

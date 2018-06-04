@@ -1,12 +1,6 @@
 import {readFileSync} from 'fs';
 import * as Knex from 'knex';
+import {VcmsOptions} from 'vcms';
+import {destroyStructure, getStructure, Structure} from 'vcms/lib/server';
 
-
-export async function resetDatabase(database: Knex) {
-  const sql =
-      ['cleanup', '2.data']
-          .map(f => readFileSync(`${__dirname}/../../sql/${f}.sql`).toString())
-          .join(';');
-
-  await database.raw(sql);
-}
+import Role from '../models/Role';
