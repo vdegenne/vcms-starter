@@ -6,7 +6,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "vcms:install": "bash ./scripts/install.sh",
-    "install:database": "psql -U vcms_user -d vcms_test -f sql/install.sql",
+    "install:database": "psql -U %dbuser% -d %dbname% -f sql/install.sql",
     "vcms:run": "./scripts/run.sh",
     "clean": "rimraf build",
     "build": "yarn clean && tsc",

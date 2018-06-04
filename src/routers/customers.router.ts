@@ -248,7 +248,7 @@ router.delete('/:customerId', async (req, res) => {
       return;
     }
 
-    let customer: Customer = await Customer.get(params.customerId);
+    let customer: any = await Customer.get(params.customerId);
     try {  // delete
 
       if (!customer) {
