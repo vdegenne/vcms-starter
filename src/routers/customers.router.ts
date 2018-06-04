@@ -207,8 +207,8 @@ router.put('/:customerId', async (req, res) => {
       }
 
       // customer = {...customer, ...body};
-
       customer = (await Customer.query().patch(body).where('id', customer.id).returning('*'))[0];
+
       res.send({success: 1, customer});
       return;
 
