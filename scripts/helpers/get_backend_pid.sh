@@ -3,7 +3,7 @@
 
 function get_backend_pid () {
 
-  back_processes="$(ps aux | grep -E 'node build/[^ ]*' | head -n -1)"
+  back_processes="$(ps aux | grep -v tmp | grep -E 'node build/[^ ]*' | head -n -1)"
 
   while read back_proc
   do
@@ -17,3 +17,4 @@ function get_backend_pid () {
   echo $back_pid;
   return 0;
 }
+
